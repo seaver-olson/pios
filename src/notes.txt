@@ -1,0 +1,3 @@
+compile with linker file:
+	gcc -c inFile.c -o inFile.o
+	gcc inFile.o -T linkerFile.ld -o output
