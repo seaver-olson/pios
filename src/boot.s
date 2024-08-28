@@ -49,7 +49,7 @@ maincore:
     ldr     x5, =__bss_start
     ldr     w6, =__bss_size
 3:  cbz     w6, 4f
-    str     xzr, [x5], #8
+    str     xzr, [x5], #8//xzr is the const for 0
     sub     w6, w6, #1
     cbnz    w6, 3b
  

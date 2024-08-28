@@ -83,6 +83,6 @@ OBJS = \
 
 ```
 
-Note that the new line we added to the `OBJS` list was `neil.o`, not `neil.c`. Also, you need to make sure you have an empty line after the last element of the `OBJS` list, otherwise `make` will complain.
+Note that the new line we added to the `OBJS` list was `neil.o`, not `neil.c`. Also, you need to make sure you have an empty line after the last element of the `OBJS` list, otherwise `make` will complain. testing my OS
 
 
