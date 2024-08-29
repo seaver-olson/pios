@@ -2,6 +2,7 @@
 	- [x] list.c and list.h- handles add and removal of items in a linked list
 	- [ ] kernel_main.c - clear bss segment of memory with zeros from xzr
 
+compile kernel using `aarch64-elf-gcc -ffreestanding -c kernel_main.c -o kernel.o -O2 -Wall -Wextra`
 
 # Rasbperry Pi OS
 
