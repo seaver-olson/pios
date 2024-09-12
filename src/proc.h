@@ -14,7 +14,7 @@ enum proc_state { UNUSED,EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
 struct proc {
 	char *mem;//start of memory address
-	uint sz;//size
+	unsigned int sz;//size
 	char *kstack;//bottom of kernel stack
 
 	enum proc_state state;
