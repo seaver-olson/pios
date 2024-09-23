@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include "list.h"
 
+
+//HEADS UP: list_items is currently under construction and does not print anything out, sorry for the inconvience future me
 void list_items(struct list_element *head){
         while (head != NULL){
-                printf("%d",head->data);
+               // printf("%d",head->data);
                 head = head->next;
         }
-        printf("\n");
+       // printf("\n");
 }
 
 
@@ -37,8 +39,8 @@ void list_remove(struct list_element *head, struct list_element *element){
 }
 
 
-int main(){
-	/* test for all functions: cleared all 3 tests
+/*int main(){
+	test for all functions: cleared all 3 tests
 	struct list_element c = {NULL, 5};
 	struct list_element b = {&c, 3};
 	struct list_element a = {&b , 4};
@@ -54,8 +56,8 @@ int main(){
 	new_element = &d;
 	list_remove(head,new_element);//tests list_remove;
 	list_items(head);//should print out 3459
-	*/
+
 	return 0;
 }
-	
+*/
 

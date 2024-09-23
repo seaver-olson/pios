@@ -1,3 +1,4 @@
+#include <stdio.h>
 
 extern unsigned char __bss_start;
 extern unsigned char __bss_end;
@@ -16,16 +17,33 @@ void wait(int microseconds){
 	}
 }
 
+
+void hexdump(char *buffer, unsigned int length){
+	for (int i = 0; i < length; i += 16) {
+		printf("(%x) : ", &buffer);
+		for (int j=0; j < 16;j++){
+			if (j+i>length){
+				printf("  ");
+			} else {
+				printf("%02x ", buffer[i + j]);
+			}
+		}
+		printf("\n");	
+	}
+	printf("\n");	 	
+}
+
+
 void kernel_main() {
 	char *begin_bss = &__bss_start;
 	char *end_bss = &__bss_end;
-	char *currentCell = &begin_bss;
+	char *currentCell = begin_bss;
 	//clear bss buffer	
 	while(&currentCell != &end_bss){
-		currentCell = '0';
-		*currentCell = &currentCell++;		
+		*currentCell = '0';
+		currentCell = currentCell++;
 	} 
 	while(1){
-    	
+    		hexdump(begin_bss,32);
 	}
 }

@@ -38,7 +38,6 @@ bin: $(OBJ)
 clean:
 	rm -f obj/*
 	rm -f rootfs.img
-	rm -f rootfs.img
 	rm -f kernel8.img
 	rm -f kernel8.elf
 
