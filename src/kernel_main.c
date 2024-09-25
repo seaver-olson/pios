@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "rprintf.c"
 
 extern unsigned char __bss_start;
 extern unsigned char __bss_end;
@@ -20,21 +20,23 @@ void wait(int microseconds){
 
 void hexdump(char *buffer, unsigned int length){
 	for (int i = 0; i < length; i += 16) {
-		printf("(%x) : ", &buffer);
+		esp_printf("(%x) : ", &buffer);
 		for (int j=0; j < 16;j++){
 			if (j+i>length){
-				printf("  ");
+				esp_printf("%s" ,"  ");
 			} else {
-				printf("%02x ", buffer[i + j]);
+				esp_printf("%02x ", buffer[i + j]);
 			}
 		}
-		printf("\n");	
+		esp_printf("%s","\n");	
 	}
-	printf("\n");	 	
+	esp_printf("%s","\n");	 	
 }
 
 
 void kernel_main() {
+	int x = 0;
+	esp_printf("%d",x);
 	char *begin_bss = &__bss_start;
 	char *end_bss = &__bss_end;
 	char *currentCell = begin_bss;
