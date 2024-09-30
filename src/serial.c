@@ -8,6 +8,8 @@ void putc(int data){
 	if (muio_ptr != NULL){
 		*muio_ptr = data;
 	}
+        while (muio_ptr && (1 << 15) == 0);
+	*muio_ptr = data;
 	//reverse would be data = *muio_ptr; to read the value at muio
 }
 
