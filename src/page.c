@@ -44,7 +44,17 @@ struct ppage *allocate_physical_pages(unsigned int npages){
 }
 
 void free_physical_pages(struct ppage *ppage_list){
-
+	if (ppage_list == NULL){
+		return;
+	}
+	struct ppage *current_physical_page;
+	current_physical_page = ppage_list;
+	while (current_physical_page->next != NULL){
+		current_physical_page = current_physical_page->next;
+	}
+	current_physical_page->next = physical_frame_allocation;
+	physical_frame_allocation->prev = current_physical_page;
+	physical_frame_allocation = ppage_list;
 }
 
 
@@ -52,5 +62,6 @@ int main(){
 	init_pfa_list();
 	struct ppage *allocd_list;
 	allocd_list = allocate_physical_pages(2);
+	free_physical_pages(allocd_list);
 	return 0;
 }
