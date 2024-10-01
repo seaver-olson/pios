@@ -49,11 +49,16 @@ void free_physical_pages(struct ppage *ppage_list){
 	}
 	struct ppage *current_physical_page;
 	current_physical_page = ppage_list;
+	//get to end of ppage_list
 	while (current_physical_page->next != NULL){
 		current_physical_page = current_physical_page->next;
 	}
+
+	if (physical_frame_allocation != NULL){
+		physical_frame_allocation->prev = current_physical_page;
+	}
+
 	current_physical_page->next = physical_frame_allocation;
-	physical_frame_allocation->prev = current_physical_page;
 	physical_frame_allocation = ppage_list;
 }
 
