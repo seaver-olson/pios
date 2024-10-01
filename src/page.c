@@ -1,7 +1,6 @@
 
 #include "page.h"
-#include <stdio.h>
-//#define NULL    ((void*)0)//some how I just found out NULL doesn't come with C, I feel very stupid
+#define NULL    ((void*)0)//some how I just found out NULL doesn't come with C, I feel very stupid
 
 struct ppage physical_page_array[128];
 struct ppage *physical_frame_allocation = &physical_page_array[0];
@@ -21,14 +20,24 @@ void init_pfa_list(void) {
 }
 
 struct ppage *allocate_physical_pages(unsigned int npages){
+	//if no free frames return NULL to prevent SegFault
+	if (physical_frame_allocation == NULL){
+		return NULL;
+	}
 	struct ppage *allocd_list,  *current_physical_page;
 	allocd_list = physical_frame_allocation;
+	current_physical_page = allocd_list;
 	for (int i = 0; i < npages; i++){
-		allocd_list = allocd_list->next;
+		if (current_physical_page == NULL){
+			return NULL;//prevent segFault from asking for more memory than exists
+		}
+		current_physical_page = current_physical_page->next;
 		if (i+1 == npages){
-			physical_frame_allocation =  allocd_list->next;
-			physical_frame_allocation->prev = NULL;
-			allocd_list->next = NULL;
+			physical_frame_allocation = current_physical_page;
+			if (physical_frame_allocation != NULL){
+				physical_frame_allocation->prev = NULL;
+			}
+			current_physical_page->next = NULL;
 		}
 	}
 	return  allocd_list;
