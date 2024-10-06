@@ -40,12 +40,15 @@ void kernel_main() {
 	char *begin_bss = &__bss_start;
 	char *end_bss = &__bss_end;
 	char *currentCell = begin_bss;
-	//clear bss buffer	
+	/*clear bss buffer	
 	while(&currentCell != &end_bss){
 		*currentCell = '0';
 		currentCell = currentCell++;
-	} 
+	}
+	boot.s clears bss anyways so I don't need this 
+	
 	while(1){
     		hexdump(begin_bss,32);
 	}
+*/
 }

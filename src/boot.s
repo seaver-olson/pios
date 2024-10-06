@@ -24,8 +24,9 @@ b _start           /* CODE0 : Executable code */
 // Make _start global.
 
 // Typical exception vector table code.
+
 .balign 0x800
-Vector_table_el3:
+_vectors:
 curr_el_sp0_sync:        // The exception handler for a synchronous 
                          // exception from the current EL using SP0.
 .balign 0x80
@@ -95,10 +96,11 @@ lower_el_aarch32_serror: // The exception handler for a System Error
 // x3 -> 0
 // x4 -> 32 bit kernel entry point, _start location
 _start:
+
     mrs x1, mpidr_el1//error here
     and x1,x1,#3
-    cbz x1, maincore
-
+    //cbz x1, maincore
+    b maincore
 notmaincore: // CPU id > 0: stop
     wfi
     b notmaincore
@@ -107,7 +109,7 @@ maincore:
     // set stack before our code
     ldr     x5, =_start
     mov     sp, x5
-    
+
     ldr     x1, =_start
 
     // set up EL1
@@ -144,9 +146,9 @@ maincore:
 
     // set up exception handlers
     // Uncomment this stuff once you set up the vector table
-//    ldr     x2, =_vectors
-//    msr     vbar_el1, x2
-//    msr     vbar_el2, x2
+    ldr     x2, =_vectors
+    msr     vbar_el1, x2
+    msr     vbar_el2, x2
 
     // change execution level to EL1
     mov     x2, #0x3c4 // Change execution level to EL1
