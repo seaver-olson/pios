@@ -1,5 +1,5 @@
 // AArch64 mode
- 
+
 .section ".kernel-header"
 
 // Kernel Header
@@ -17,13 +17,23 @@ b _start           /* CODE0 : Executable code */
 
 // To keep this in the first portion of the binary.
 .section ".text.boot"
- 
+
 // To keep this in the first portion of the binary.
 .section ".text.boot"
- 
+
 // Make _start global.
+
+.balign 0x800
+Vector_table_el2:
+curr_el_sp0_sync:
+
+.balign 0x80
+curr_el_sp0_irq:
+
+
+
 .globl _start
- 
+
 // Entry point for the kernel. Registers:
 // x0 -> 32 bit pointer to DTB in memory (primary core only) / 0 (secondary cores)
 // x1 -> 0
@@ -31,8 +41,6 @@ b _start           /* CODE0 : Executable code */
 // x3 -> 0
 // x4 -> 32 bit kernel entry point, _start location
 _start:
-    mrs x0, CurrentEL
-   
     mrs x1, mpidr_el1//error here
     and x1,x1,#3
     cbz x1, maincore
@@ -95,7 +103,7 @@ maincore:
     eret
 
 5:  mov     sp, x1
-     
+
     // clear bss
     ldr     x5, =__bss_start
     ldr     w6, =__bss_size
