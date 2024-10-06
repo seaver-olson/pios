@@ -2,7 +2,7 @@
 
 CC := aarch64-linux-gnu-gcc
 LD := aarch64-linux-gnu-ld
-OBJDUMP := aarch64-linux-gnu--objdump
+OBJDUMP := aarch64-linux-gnu-objdump
 OBJCOPY := aarch64-linux-gnu-objcopy
 CONFIGS := -DCONFIG_HEAP_SIZE=4096
 
@@ -17,6 +17,8 @@ OBJS = \
 	kernel_main.o \
 	list.o \
 	page.o \
+	serial.o \
+	rprintf.o \
 
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 
@@ -30,9 +32,11 @@ $(ODIR)/%.o: $(SDIR)/%.s
 all: bin rootfs.img
 
 bin: $(OBJ)
-	$(LD) obj/* -Tkernel.ld -o kernel8.img
+	#changed line below  due to globbing method
+	$(LD) $(OBJ) -Tkernel.ld -o kernel8.img
 	cp kernel8.img kernel8.elf
-	$(OBJCOPY) -O binary kernel8.img
+	#didn't actually copy file anywhere lol
+	$(OBJCOPY) -O binary kernel8.img kernel8.bin
 	aarch64-linux-gnu-size kernel8.elf
 
 clean:
@@ -46,7 +50,7 @@ debug:
 	TERM=xterm gdb -x gdb_init_prot_mode.txt && killall qemu-system-aarch64
 
 run:
-	qemu-system-aarch64 -machine raspi3b -kernel kernel8.img -hda rootfs.img -serial null -serial stdio -monitor none -nographic -k en-us
+	qemu-system-aarch64 -machine raspi3b  -kernel kernel8.img  -hda rootfs.img -serial null -serial stdio -monitor none -nographic -k en-us
 
 disassemble:
 	$(OBJDUMP) -D kernel8.elf

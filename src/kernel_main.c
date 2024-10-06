@@ -1,4 +1,4 @@
-#include "rprintf.c"
+#include "rprintf.h"
 
 extern unsigned char __bss_start;
 extern unsigned char __bss_end;
