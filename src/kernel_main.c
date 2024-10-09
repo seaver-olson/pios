@@ -1,4 +1,6 @@
 #include "rprintf.h"
+#include "page.h"
+#include "serial.h"
 
 #define NULL (void*) 0
 
