@@ -25,30 +25,25 @@ void hexdump(char *buffer, unsigned int length){
 		esp_printf("(%x) : ", &buffer);
 		for (int j=0; j < 16;j++){
 			if (j+i>length){
-				esp_printf("%s" ,"  ");
+				esp_printf(putc ,"  ");
 			} else {
 				esp_printf("%02x ", buffer[i + j]);
 			}
 		}
-		esp_printf("%s","\n");	
+		esp_printf(putc, "\n");	
 	}
-	esp_printf("%s","\n");	 	
+	esp_printf(putc, "\n");		 	
 }
 
 
 void kernel_main() {
-	int x = 0;
-	esp_printf("%d",x);
 	char *begin_bss = &__bss_start;
 	char *end_bss = &__bss_end;
-	char *currentCell = begin_bss;
-	/*clear bss buffer	
-	while(&currentCell != &end_bss){
-		*currentCell = '0';
-		currentCell = currentCell++;
+	int i = 0;
+	while (begin_bss != end_bss){
+		begin_bss[i] = 0;
+		i++;
 	}
-	boot.s clears bss anyways so I don't need this 
-	
 	while(1){
     		hexdump(begin_bss,32);
 	}
