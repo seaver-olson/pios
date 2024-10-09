@@ -1,5 +1,7 @@
 #include "rprintf.h"
 
+#define NULL (void*) 0
+
 extern unsigned char __bss_start;
 extern unsigned char __bss_end;
 
