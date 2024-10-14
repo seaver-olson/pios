@@ -1,6 +1,7 @@
 #include "rprintf.h"
 #include "page.h"
 #include "serial.h"
+#include "mmu.h"
 
 #define NULL (void*) 0
 
@@ -39,6 +40,7 @@ void hexdump(char *buffer, unsigned int length){
 
 
 void kernel_main() {
+	
 	char *begin_bss = &__bss_start;
 	char *end_bss = &__bss_end;
 	int i = 0;
@@ -47,6 +49,7 @@ void kernel_main() {
 		i++;
 	}
 	while(1){
+		mmu_on();
     		hexdump(begin_bss,32);
 	}
 */
