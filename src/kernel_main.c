@@ -14,6 +14,16 @@ unsigned long get_timer_count(){
 	return *timer_count_register;
 }
 
+void clear_bss(){
+	char *begin_bss = &__bss_start;
+	char *end_bss = &__bss_end;
+	int i = 0;
+	while (begin_bss != end_bss){
+		begin_bss[i] = 0;
+		i++;
+	}
+}
+
 void wait(int microseconds){
 	unsigned long start_time = get_timer_count();
 	unsigned long time = 0;
@@ -40,14 +50,7 @@ void hexdump(char *buffer, unsigned int length){
 
 
 void kernel_main() {
-	
-	char *begin_bss = &__bss_start;
-	char *end_bss = &__bss_end;
-	int i = 0;
-	while (begin_bss != end_bss){
-		begin_bss[i] = 0;
-		i++;
-	}
+	clear_bss();
 	while(1){
 		mmu_on();
     		hexdump(begin_bss,32);
