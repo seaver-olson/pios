@@ -96,7 +96,8 @@ lower_el_aarch32_serror: // The exception handler for a System Error
 // x3 -> 0
 // x4 -> 32 bit kernel entry point, _start location
 _start:
-
+    mrs x0, CurrentEL
+    lsr x0, x0, #2
     mrs x1, mpidr_el1//error here
     and x1,x1,#3
     //cbz x1, maincore

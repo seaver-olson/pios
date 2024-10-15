@@ -184,8 +184,8 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
 {
     int r,c=0,d;
     if(num<1) num=1;
-//    esp_printf(putc,"sd_readblock lba ");/*uart_hex(lba);*/esp_printf(putc," num ");/*uart_hex(num);*/esp_printf(putc,"\n");
-    printk("[sd_readblock] lba = %d num = %d\r\n", lba, num);
+    esp_printf(putc,"sd_readblock lba ");/*uart_hex(lba);*/esp_printf(putc," num ");/*uart_hex(num);*/esp_printf(putc,"\n");
+    //printk("[sd_readblock] lba = %d num = %d\r\n", lba, num);
     if(sd_status(SR_DAT_INHIBIT)) {sd_err=SD_TIMEOUT; return 0;}
     unsigned int *buf=(unsigned int *)buffer;
     if(sd_scr[0] & SCR_SUPP_CCS) {
@@ -258,18 +258,18 @@ int sd_init()
     long r,cnt,ccs=0;
     // GPIO_CD
     r=*GPFSEL4; r&=~(7<<(7*3)); *GPFSEL4=r;
-    *GPPUD=2; wait_cycles(150); *GPPUDCLK1=(1<<15); wait_cycles(150); *GPPUD=0; *GPPUDCLK1=0;
+    *GPPUD=2; wait_msec(150); *GPPUDCLK1=(1<<15); wait_msec(150); *GPPUD=0; *GPPUDCLK1=0;
     r=*GPHEN1; r|=1<<15; *GPHEN1=r;
 
     // GPIO_CLK, GPIO_CMD
     r=*GPFSEL4; r|=(7<<(8*3))|(7<<(9*3)); *GPFSEL4=r;
-    *GPPUD=2; wait_cycles(150); *GPPUDCLK1=(1<<16)|(1<<17); wait_cycles(150); *GPPUD=0; *GPPUDCLK1=0;
+    *GPPUD=2; wait_msec(150); *GPPUDCLK1=(1<<16)|(1<<17); wait_msec(150); *GPPUD=0; *GPPUDCLK1=0;
 
     // GPIO_DAT0, GPIO_DAT1, GPIO_DAT2, GPIO_DAT3
     r=*GPFSEL5; r|=(7<<(0*3)) | (7<<(1*3)) | (7<<(2*3)) | (7<<(3*3)); *GPFSEL5=r;
-    *GPPUD=2; wait_cycles(150);
+    *GPPUD=2; wait_msec(150);
     *GPPUDCLK1=(1<<18) | (1<<19) | (1<<20) | (1<<21);
-    wait_cycles(150); *GPPUD=0; *GPPUDCLK1=0;
+    wait_msec(150); *GPPUD=0; *GPPUDCLK1=0;
 
     sd_hv = (*EMMC_SLOTISR_VER & HOST_SPEC_NUM) >> HOST_SPEC_NUM_SHIFT;
     esp_printf(putc, "EMMC: GPIO set up\n");
@@ -294,7 +294,7 @@ int sd_init()
     sd_cmd(CMD_SEND_IF_COND,0x000001AA);
     if(sd_err) return sd_err;
     cnt=6; r=0; while(!(r&ACMD41_CMD_COMPLETE) && cnt--) {
-        wait_cycles(400);
+        wait_msec(400);
         r=sd_cmd(CMD_SEND_OP_COND,ACMD41_ARG_HC);
         esp_printf(putc,"EMMC: CMD_SEND_OP_COND returned ");
         if(r&ACMD41_CMD_COMPLETE)
