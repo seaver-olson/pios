@@ -7,6 +7,8 @@
 extern unsigned char __bss_start;
 extern unsigned char __bss_end;
 
+char glbl[128];
+
 void clear_bss(){
 	unsigned char *begin_bss = &__bss_start;
 	unsigned char *end_bss = &__bss_end;
