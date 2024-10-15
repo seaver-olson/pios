@@ -1,0 +1,2 @@
+void putc(int data);
+

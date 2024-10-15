@@ -2,21 +2,14 @@
 #include "page.h"
 #include "serial.h"
 #include "mmu.h"
-
-#define NULL (void*) 0
+#include "delays.h"
 
 extern unsigned char __bss_start;
 extern unsigned char __bss_end;
 
-//edit later to check if time has reached max and if it has figure out how to keep counting
-unsigned long get_timer_count(){
-	unsigned long *timer_count_register = 0x3f003004;
-	return *timer_count_register;
-}
-
 void clear_bss(){
-	char *begin_bss = &__bss_start;
-	char *end_bss = &__bss_end;
+	unsigned char *begin_bss = &__bss_start;
+	unsigned char *end_bss = &__bss_end;
 	int i = 0;
 	while (begin_bss != end_bss){
 		begin_bss[i] = 0;
@@ -24,18 +17,9 @@ void clear_bss(){
 	}
 }
 
-void wait(int microseconds){
-	unsigned long start_time = get_timer_count();
-	unsigned long time = 0;
-	while(microseconds > time){
-		time = get_timer_count() - start_time;	
-	}
-}
-
-
 void hexdump(char *buffer, unsigned int length){
 	for (int i = 0; i < length; i += 16) {
-		esp_printf("(%x) : ", &buffer);
+		esp_printf(putc, "(%x) : ", buffer);
 		for (int j=0; j < 16;j++){
 			if (j+i>length){
 				esp_printf(putc ,"  ");
@@ -51,9 +35,5 @@ void hexdump(char *buffer, unsigned int length){
 
 void kernel_main() {
 	clear_bss();
-	while(1){
-		mmu_on();
-    		hexdump(begin_bss,32);
-	}
-*/
+
 }

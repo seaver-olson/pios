@@ -1,7 +1,9 @@
 #include "fat.h"
 #include "sd.h"
 #include "rprintf.h"
+#include "string.h"
 #include "serial.h"
+
 struct boot_sector *bs;
 char bootSector[512];
 char fat_table[8*SECTOR_SIZE];
@@ -15,10 +17,11 @@ int fatInit(){
 	esp_printf(putc, "fs type: ");
 	//8 because fs_type[8]
 	for (int i = 0; i < 8; i++){
-		esp_printf(putc, "%c", bs->fs_type[i];
+		esp_printf(putc, "%c", bs->fs_type[i]);
 	}
 	if (bs->boot_signature != 0xaa55){
 		esp_printf(putc, "[WARNING]: boot_signature is not 0xaa55");
+		return 0;
 	} else {
 		esp_printf(putc, "boot_signature : 0xaa55");
 	}
@@ -26,16 +29,24 @@ int fatInit(){
 		esp_printf(putc, "fs_type : FAT12");
 	} else {
 		esp_printf(putc, "[WARNING]: fs_type is not FAT12");
+		return 0;
 	}
 	esp_printf(putc, "num_fat_tables: %d\n", bs->num_fat_tables);
 	esp_printf(putc, "num_sectors_per_fat: %d\n", bs->num_sectors_per_fat);
 	esp_printf(putc, "num_reserved_sectors: %d\n", bs->num_reserved_sectors);
 	esp_printf(putc, "num_hidden_sectors: %d\n",bs->num_hidden_sectors);
 	root_sector = (bs->num_fat_tables + bs->num_sectors_per_fat + bs->num_reserved_sectors + bs->num_hidden_sectors);
-	if (sd_readblock(0, boot_sector, 1) == 0){
+	if (sd_readblock(0, bs, 1) == 0){
 		esp_printf(putc, "[WARNING]: Failed to read boot sector\n");
 	}
-	sd_readblock(root_sector,fat_table,bs->num_sectors_per_fat);	
-	
-	
+	sd_readblock(root_sector,fat_table,bs->num_sectors_per_fat);
+	return 0.0 / 0.0;
+}
+
+void fatOpen(struct file* file, char*filename){
+
+}
+
+void fatRead(struct file* file, char buffer[], unsigned int bytes_to_read){
+
 }
