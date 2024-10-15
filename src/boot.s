@@ -25,65 +25,16 @@ b _start           /* CODE0 : Executable code */
 
 // Typical exception vector table code.
 
-.balign 0x800
-_vectors:
-curr_el_sp0_sync:        // The exception handler for a synchronous 
-        b .                  // exception from the current EL using SP0.
-.balign 0x80
-curr_el_sp0_irq:         // The exception handler for an IRQ exception
-        b .                 // from the current EL using SP0.
-.balign 0x80
-curr_el_sp0_fiq:         // The exception handler for an FIQ exception
-        b .                 // from the current EL using SP0.
-.balign 0x80
-curr_el_sp0_serror:      // The exception handler for a System Error 
-        b .                // exception from the current EL using SP0.
-.balign 0x80
-curr_el_spx_sync:        // The exception handler for a synchrous 
-        b .                 // exception from the current EL using the
-                         // current SP.
-.balign 0x80
-curr_el_spx_irq:         // The exception handler for an IRQ exception from 
-        b .                 // the current EL using the current SP.
-
-.balign 0x80
-curr_el_spx_fiq:         // The exception handler for an FIQ from 
-        b .                // the current EL using the current SP.
-
-.balign 0x80
-curr_el_spx_serror:      // The exception handler for a System Error 
-        b .                 // exception from the current EL using the
-                         // current SP.
-
- .balign 0x80
-lower_el_aarch64_sync:   // The exception handler for a synchronous 
-         b .                // exception from a lower EL (AArch64).
-
-.balign 0x80
-lower_el_aarch64_irq:    // The exception handler for an IRQ from a lower EL
-         b .                // (AArch64).
-
-.balign 0x80
-lower_el_aarch64_fiq:    // The exception handler for an FIQ from a lower EL
-         b .                // (AArch64).
-
-.balign 0x80
-lower_el_aarch64_serror: // The exception handler for a System Error 
-         b .                // exception from a lower EL(AArch64).
-
-.balign 0x80
-lower_el_aarch32_sync:   // The exception handler for a synchronous 
-         b .                // exception from a lower EL(AArch32).
-.balign 0x80
-lower_el_aarch32_irq:    // The exception handler for an IRQ exception 
-         b .                // from a lower EL (AArch32).
-.balign 0x80
-lower_el_aarch32_fiq:    // The exception handler for an FIQ exception from 
-         b .                // a lower EL (AArch32).
-.balign 0x80
-lower_el_aarch32_serror: // The exception handler for a System Error
-         b .               // exception from a lower EL(AArch32).
-
+.align 11                  // Align to a 2KB boundary (required)
+vector_table_el1:
+    b   el1_sync           // 0x00: Synchronous exception from EL1
+    b   el1_irq            // 0x80: IRQ exception from EL1
+    b   el1_fiq            // 0x100: FIQ exception from EL1
+    b   el1_serror         // 0x180: SError exception from EL1
+    b   el0_sync           // 0x200: Synchronous exception from EL0
+    b   el0_irq            // 0x280: IRQ exception from EL0
+    b   el0_fiq            // 0x300: FIQ exception from EL0
+    b   el0_serror         // 0x380: SError exception from EL0
 
 
 
@@ -147,7 +98,7 @@ maincore:
 
     // set up exception handlers
     // Uncomment this stuff once you set up the vector table
-    ldr     x2, =_vectors
+    ldr     x2, =vector_table_el1
     msr     vbar_el1, x2
     msr     vbar_el2, x2
 
