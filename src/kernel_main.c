@@ -17,6 +17,16 @@ void clear_bss(){
 	}
 }
 
+unsigned int getEL(){
+  unsigned int el;
+  asm("mrs %0,CurrentEL"
+      : "=r"(el)
+      :
+      :);
+
+  return el;
+}
+
 void hexdump(char *buffer, unsigned int length){
 	for (int i = 0; i < length; i += 16) {
 		esp_printf(putc, "(%x) : ", buffer);
