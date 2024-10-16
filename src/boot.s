@@ -98,7 +98,7 @@ maincore:
 
     // set up exception handlers
     // Uncomment this stuff once you set up the vector table
-    ldr     x2, =vector_table_el1
+    ldr     x2, =_vectors
     msr     vbar_el1, x2
     msr     vbar_el2, x2
 
