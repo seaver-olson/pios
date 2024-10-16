@@ -101,5 +101,16 @@ int loadPageTable(struct table_descriptor_stage1 *L1table) {
     asm volatile ("msr sctlr_el1, %0; isb" : : "r" (r));
     return 0;
 }
-
-
+//note for homework 7 check, there is no edge case testing right now but I will add that later
+void setupIdentityMap(){
+    void *vaddr = (void *)0x0;//Virtual address
+    void *paddr = (void *)0x0;//Physical address
+    //512: num_entries_per_table
+    for(int i = 0; i < 512; i++){
+        mapPages(vaddr, paddr); 
+        //increment by 2MB, prob switch this logic to the for loop later
+        vaddr += 0x200000;
+        paddr += 0x200000;
+    }
+    loadPageTable(L1table);
+}
