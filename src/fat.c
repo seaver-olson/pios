@@ -60,15 +60,11 @@ void fatOpen(struct file* file, char*filename){
 	rde = rdeputs;
 	// iterate through the root directory entries
 	for (int i = 0; i<entries;i++){
-		if (strncmp(rde->file_name, filename, 8) == 0){
-			//3 for ex: .exe or .txt or java
-			if (strncmp(rde->file_extension, ext, 3) == 0){
+		if (strncmp(rde->file_name, filename, 8) == 0 && strncmp(rde->file_extension, ext, 3) == 0) {
 				found = 1;
 				break;
 			}
-			
-		}
-	
+		rde++;
 	}
 	if (found == 0){
 		esp_printf(putc, "File not found\n");
@@ -93,7 +89,7 @@ void fatRead(struct file* file, char buffer[], unsigned int bytes_to_read){
 	if (bytes_to_read > SECTOR_SIZE){
 		bytes_to_read -= SECTOR_SIZE;
 		data += SECTOR_SIZE;
-		cluster = fat_table[cluster];
+		cluster = fat_table[cluster];//next cluster
 	} 
 }
 
