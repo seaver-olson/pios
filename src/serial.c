@@ -1,6 +1,6 @@
 #include "rprintf.h"
 
-#define MU_IO_REG 0x3F00000
+#define MU_IO_REG 0x3F215040;
 
 volatile int *muio_ptr = (volatile int *)(MU_IO_REG);
 
