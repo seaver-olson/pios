@@ -47,5 +47,8 @@ void hexdump(char *buffer, unsigned int length){
 
 void kernel_main() {
 	clear_bss();
-
+	init_pfa_list();
+	struct ppage *allocd_list = allocate_physical_pages(2);
+	free_physical_pages(allocd_list);
+	return 0;
 }

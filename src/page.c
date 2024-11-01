@@ -24,15 +24,16 @@ struct ppage *allocate_physical_pages(unsigned int npages){
 	if (physical_frame_allocation == NULL){
 		return NULL;
 	}
-	struct ppage *allocd_list,  *current_physical_page;
-	allocd_list = physical_frame_allocation;
-	current_physical_page = allocd_list;
+	struct ppage *allocd_list = physical_frame_allocation;
+  	struct ppage *current_physical_page = allocd_list;
 	for (int i = 0; i < npages; i++){
 		if (current_physical_page == NULL){
 			return NULL;//prevent segFault from asking for more memory than exists
 		}
+
 		current_physical_page = current_physical_page->next;
 		if (i+1 == npages){
+			
 			physical_frame_allocation = current_physical_page;
 			if (physical_frame_allocation != NULL){
 				physical_frame_allocation->prev = NULL;

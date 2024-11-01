@@ -31,7 +31,6 @@ b _start           /* CODE0 : Executable code */
 // x3 -> 0
 // x4 -> 32 bit kernel entry point, _start location
 _start:
-
     mrs x1, mpidr_el1
     and x1, x1, #3
     cbz x1, maincore
@@ -39,12 +38,7 @@ _start:
 notmaincore: // CPU id > 0: stop
     wfi
     b notmaincore
-    
-/*
- * This code puts the CPU in execution level 0. You can paste it in to your
- * boot.s file right after stack pointer setup.
- *
- */
+
 maincore:
     // set stack before our code
     ldr     x5, =_start
