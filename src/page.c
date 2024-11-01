@@ -63,7 +63,7 @@ void free_physical_pages(struct ppage *ppage_list){
 	physical_frame_allocation = ppage_list;
 }
 
-/*
+
 int main(){
 	init_pfa_list();
 	struct ppage *allocd_list;
@@ -71,4 +71,4 @@ int main(){
 	free_physical_pages(allocd_list);
 	return 0;
 }
-*/
+

@@ -12,8 +12,8 @@ typedef unsigned int  size_t;
 
 int isdig(int c); // hand-implemented alternative to isdigit(), which uses a bunch of c library functions I don't want to include.
 
-typedef char* charptr;
-typedef int (*func_ptr)(int c);
+typedef char *charptr;
+typedef void (*func_ptr)(int);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////  Common Prototype functions

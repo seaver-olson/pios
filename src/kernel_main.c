@@ -36,7 +36,7 @@ void hexdump(char *buffer, unsigned int length){
 			if (j+i>length){
 				esp_printf(putc ,"  ");
 			} else {
-				esp_printf("%02x ", buffer[i + j]);
+				esp_printf(putc, "%02x ", buffer[i + j]);
 			}
 		}
 		esp_printf(putc, "\n");	
@@ -47,8 +47,7 @@ void hexdump(char *buffer, unsigned int length){
 
 void kernel_main() {
 	clear_bss();
-	init_pfa_list();
-	struct ppage *allocd_list = allocate_physical_pages(2);
-	free_physical_pages(allocd_list);
-	return 0;
+	while (1){
+	esp_printf(putc, "hello");		
+	}
 }

@@ -12,8 +12,3 @@ void putc(int data){
 	*muio_ptr = data;
 	//reverse would be data = *muio_ptr; to read the value at muio
 }
-
-int main(){
-	esp_printf((int (*)(int))putc, "Current Execution Level is %d\r\n", getEL());
-	return 0;
-}

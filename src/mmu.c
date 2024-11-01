@@ -21,19 +21,19 @@ struct page_descriptor_stage1 L2table[512] __attribute__((aligned(4096)));
 
 
 void mapPages(void *vaddr, void *paddr) {
-    unsigned int L2tableIndex = ((unsigned int)vaddr >> 21) & 0x1ff;
-    unsigned int L1tableIndex = ((unsigned int)vaddr >> 30) & 0x1ff;
+    unsigned long L2tableIndex = ((unsigned long)vaddr >> 21) & 0x1ff;
+    unsigned long L1tableIndex = ((unsigned long)vaddr >> 30) & 0x1ff;
 
 
     L1table[L1tableIndex].type = 3;
-    L1table[L1tableIndex].next_lvl_table = ((unsigned int)&L2table[0])>>12;
+    L1table[L1tableIndex].next_lvl_table = ((unsigned long)&L2table[0])>>12;
 
     L2table[L2tableIndex].attrindx = 0; // Normal memory, not memory-mapped IO 1 for IO
     L2table[L2tableIndex].type = 1; // Pointing to memory page
     L2table[L2tableIndex].sh = 3; // Set inner sharable
     L2table[L2tableIndex].ap = 0; // Access permission, kernel RW
     L2table[L2tableIndex].af = 1; // ??
-    L2table[L2tableIndex].output_addr = (unsigned int)paddr >> 21; // 
+    L2table[L2tableIndex].output_addr = (unsigned long)paddr >> 21; // 
 }
 
 
