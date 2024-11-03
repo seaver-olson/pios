@@ -21,6 +21,7 @@
  * MBR which is stored in the first sector on the drive.
  *
  */
+int fatInit();
 
 struct boot_sector {
     char code[3];

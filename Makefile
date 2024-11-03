@@ -22,7 +22,7 @@ OBJS = \
 	rprintf.o \
 	sd.o \
 	list.o \
-
+	fat.o \
 
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 

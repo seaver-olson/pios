@@ -3,7 +3,7 @@
 #include "serial.h"
 #include "mmu.h"
 #include "delays.h"
-
+#include "fat.h"
 
 char glbl[128];
 
@@ -47,8 +47,13 @@ void hexdump(char *buffer, unsigned int length){
 
 void kernel_main() {
 	//clear_bss();
+	if (fatInit() != 0){
+		esp_printf(putc, "[ERROR] FAT INIT FAILED");
+		return ;
+	}
+	esp_printf(putc, "FAT SYS INITIALIZED\n");
+
 	while (1){
-		esp_printf(putc, "penis");
 		//esp_printf(putc,"%d", getEL());		
 	}
 }
