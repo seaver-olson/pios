@@ -54,6 +54,6 @@ void kernel_main() {
 	esp_printf(putc, "FAT SYS INITIALIZED\n");
 
 	while (1){
-		//esp_printf(putc,"%d", getEL());		
+
 	}
 }

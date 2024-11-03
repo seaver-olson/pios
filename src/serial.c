@@ -9,3 +9,10 @@ void putc(int data){
 		*muio_ptr = data;
 	}
 }
+
+int getc(){
+	if (muio_ptr != NULL){
+		return *muio_ptr;
+	}
+	return -1;
+}

@@ -9,7 +9,7 @@ unsigned char fat_table[8*SECTOR_SIZE];
 unsigned int actual_data_sector;
 unsigned int root_sector;
 
-int strcmp(unsigned char *first, unsigned char *second){
+int strcmp(char *first, char *second){
 	while(*first &&(*first==*second)){
 		first++;
 		second++;
@@ -27,7 +27,7 @@ void *memcpy(void *dest, const void *src, size_t n){
 }
 
 
-int strncmp(unsigned char *first, unsigned char *second, size_t n){
+int strncmp(char *first, char *second, size_t n){
 	while (n && *first && (*first == *second)){
 		first++;
 		second++;
@@ -44,19 +44,18 @@ int fatInit() {
         esp_printf(putc, "[WARNING]: SD card initialization failed\n");
         return 1;
     }
-
+    esp_printf(putc,"SD CARD initialized\n");
     if (sd_readblock(0, bootSector, 1) == 0) {
         esp_printf(putc, "[WARNING]: Failed to read boot sector\n");
         return 1;
     }
-
-    bs = bootSector;
+    bs = (struct boot_sector *)bootSector;
     esp_printf(putc, "fs type: "); 
 
     for (int i = 0; i < 8; i++) {
         esp_printf(putc, "%c", bs->fs_type[i]);
     }
-
+    esp_printf(putc, "\n");
     if (bs->boot_signature != 0xaa55) {
         esp_printf(putc, "[WARNING]: boot_signature is not 0xaa55\n");
         return 1;
@@ -64,12 +63,10 @@ int fatInit() {
         esp_printf(putc, "boot_signature : 0xaa55\n");
     }
 
-    if (strncmp(bs->fs_type, "FAT12", 5) == 0 && (bs->fs_type[5] == ' ' || bs->fs_type[5] == NULL)) {
-        esp_printf(putc, "fs_type : FAT12\n");
-    } else {
-        esp_printf(putc, "[WARNING]: fs_type : %.*s\n", 8, bs->fs_type);
-        return 1;
-    }
+    if (!(strncmp(bs->fs_type, "FAT12", 5) == 0 && (bs->fs_type[5] == ' ' || bs->fs_type[5] == '\0'))) {
+    	esp_printf(putc, "[WARNING]: fs_type : %.*s\n", 8, bs->fs_type);
+	return 1;
+    } 
 
     esp_printf(putc, "num_fat_tables: %d\n", bs->num_fat_tables);
     esp_printf(putc, "num_sectors_per_fat: %d\n", bs->num_sectors_per_fat);
@@ -88,11 +85,10 @@ int fatInit() {
 
 void fatOpen(struct file* file, unsigned char*filename){
 	esp_printf(putc, "sector : %d\n", root_sector);
-	unsigned int offset = 0;
 	unsigned int ext_idx = 0;// index used for file extension
-	ext_idx = strlen(filename) - 1;
+	ext_idx = strlen((char *)filename) - 1;
 	unsigned int found = 0;// flag to indicate if file is found
-	unsigned int rdeputs[SECTOR_SIZE];
+	unsigned char rdeputs[SECTOR_SIZE];
 	unsigned int entries = bs->num_root_dir_entries;
 	struct root_directory_entry *rde;
 
@@ -100,8 +96,8 @@ void fatOpen(struct file* file, unsigned char*filename){
 	rde = (struct root_directory_entry *)rdeputs;
 	// iterate through the root directory entries
 	for (int i = 0; i<entries;i++){
-		unsigned char *ext = filename + ext_idx+1;
-		if (strncmp((unsigned char *)rde->file_name, filename, 8) == 0 && strncmp((unsigned char *)rde->file_extension, ext, 3) == 0) {
+		char *ext = (char *)filename + ext_idx+1;
+		if (strncmp(rde->file_name, (char *)filename, 8) == 0 && strncmp(rde->file_extension, ext, 3) == 0) {
 				found = 1;
 				break;
 			}
