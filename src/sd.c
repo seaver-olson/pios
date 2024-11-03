@@ -156,7 +156,8 @@ int sd_cmd(unsigned int code, unsigned int arg)
         code &= ~CMD_NEED_APP;
     }
     if(sd_status(SR_CMD_INHIBIT)) { esp_printf(putc,"ERROR: EMMC busy\n"); sd_err= SD_TIMEOUT;return 0;}
-    esp_printf(putc,"EMMC: Sending command ");/*uart_hex(code);*/esp_printf(putc," arg ");/*uart_hex(arg);*/esp_printf(putc,"\n");
+    esp_printf(putc,"EMMC: Sending command ");
+    esp_printf(putc,"%x : %x\n",code,arg);
     *EMMC_INTERRUPT=*EMMC_INTERRUPT; *EMMC_ARG1=arg; *EMMC_CMDTM=code;
     if(code==CMD_SEND_OP_COND) wait_msec(1000); else
     if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_msec(100);
@@ -184,8 +185,8 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
 {
     int r,c=0,d;
     if(num<1) num=1;
-    esp_printf(putc,"sd_readblock lba ");/*uart_hex(lba);*/esp_printf(putc," num ");/*uart_hex(num);*/esp_printf(putc,"\n");
-    //printk("[sd_readblock] lba = %d num = %d\r\n", lba, num);
+    esp_printf(putc,"sd_readblock lba : %x", lba); 
+    esp_printf(putc," num: %x\n", num);
     if(sd_status(SR_DAT_INHIBIT)) {sd_err=SD_TIMEOUT; return 0;}
     unsigned int *buf=(unsigned int *)buffer;
     if(sd_scr[0] & SCR_SUPP_CCS) {
@@ -237,7 +238,8 @@ int sd_clk(unsigned int f)
     }
     if(sd_hv>HOST_SPEC_V2) d=c; else d=(1<<s);
     if(d<=2) {d=2;s=0;}
-    esp_printf(putc,"sd_clk divisor ");/*uart_hex(d);*/esp_printf(putc, "shift ");/*uart_hex(s);*/esp_printf(putc,"\n");
+    esp_printf(putc,"sd_clk divisor : %x", d);
+    esp_printf(putc, " shift : %x\n", s);
     if(sd_hv>HOST_SPEC_V2) h=(d&0x300)>>2;
     d=(((d&0x0ff)<<8)|h);
     *EMMC_CONTROL1=(*EMMC_CONTROL1&0xffff003f)|d; wait_msec(10);
