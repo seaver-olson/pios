@@ -22,8 +22,8 @@ b _start           /* CODE0 : Executable code */
 .section ".text.boot"
 
 // Make _start global.
-.globl _start
 
+.globl _start
 // Entry point for the kernel. Registers:
 // x0 -> 32 bit pointer to DTB in memory (primary core only) / 0 (secondary cores)
 // x1 -> 0
@@ -84,8 +84,8 @@ maincore:
     // set up exception handlers
     // Uncomment this stuff once you set up the vector table
     // ldr     x2, =_vectors
-    // msr     vbar_el1, x2
-    // msr     vbar_el2, x2
+     //msr     vbar_el1, x2
+     //msr     vbar_el2, x2
 
     // change execution level to EL1
     mov     x2, #0x3c4 // Change execution level to EL1
@@ -111,3 +111,4 @@ maincore:
 4:  bl      kernel_main
     // for failsafe, halt this core too
     // b 1b
+

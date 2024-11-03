@@ -4,12 +4,12 @@
 #include "mmu.h"
 #include "delays.h"
 
-extern unsigned char __bss_start;
-extern unsigned char __bss_end;
 
 char glbl[128];
 
 void clear_bss(){
+	extern unsigned char __bss_end;
+	extern unsigned char __bss_start;
 	unsigned char *begin_bss = &__bss_start;
 	unsigned char *end_bss = &__bss_end;
 	int i = 0;
@@ -46,8 +46,9 @@ void hexdump(char *buffer, unsigned int length){
 
 
 void kernel_main() {
-	clear_bss();
+	//clear_bss();
 	while (1){
-	esp_printf(putc, "hello");		
+		esp_printf(putc, "penis");
+		//esp_printf(putc,"%d", getEL());		
 	}
 }
