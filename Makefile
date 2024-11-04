@@ -23,6 +23,7 @@ OBJS = \
 	sd.o \
 	list.o \
 	fat.o \
+	color.o \
 
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 

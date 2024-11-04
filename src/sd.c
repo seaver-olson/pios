@@ -28,9 +28,7 @@
 #include "delays.h"
 #include "sd.h"
 #include "rprintf.h"
-
-
-
+#include "color.h"
 
 #define EMMC_ARG2           ((volatile unsigned int*)(MMIO_BASE+0x00300000))
 #define EMMC_BLKSIZECNT     ((volatile unsigned int*)(MMIO_BASE+0x00300004))
@@ -152,16 +150,21 @@ int sd_cmd(unsigned int code, unsigned int arg)
     sd_err=SD_OK;
     if(code&CMD_NEED_APP) {
         r=sd_cmd(CMD_APP_CMD|(sd_rca?CMD_RSPNS_48:0),sd_rca);
-        if(sd_rca && !r) { esp_printf(putc,"ERROR: failed to send SD APP command\n"); sd_err=SD_ERROR;return 0;}
+        if(sd_rca && !r) { 
+	red();
+	esp_printf(putc,"ERROR: failed to send SD APP command\n"); 
+	resetColor();
+	sd_err=SD_ERROR;return 0;}
         code &= ~CMD_NEED_APP;
     }
-    if(sd_status(SR_CMD_INHIBIT)) { esp_printf(putc,"ERROR: EMMC busy\n"); sd_err= SD_TIMEOUT;return 0;}
+    if(sd_status(SR_CMD_INHIBIT)) { red();esp_printf(putc,"ERROR: EMMC busy\n");resetColor(); sd_err= SD_TIMEOUT;return 0;}
+    
     esp_printf(putc,"EMMC: Sending command ");
     esp_printf(putc,"%x : %x\n",code,arg);
     *EMMC_INTERRUPT=*EMMC_INTERRUPT; *EMMC_ARG1=arg; *EMMC_CMDTM=code;
     if(code==CMD_SEND_OP_COND) wait_msec(1000); else
     if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_msec(100);
-    if((r=sd_int(INT_CMD_DONE))) {esp_printf(putc,"ERROR: failed to send EMMC command\n");sd_err=r;return 0;}
+    if((r=sd_int(INT_CMD_DONE))) {red();esp_printf(putc,"ERROR: failed to send EMMC command\n");resetColor();sd_err=r;return 0;}
     r=*EMMC_RESP0;
     if(code==CMD_GO_IDLE || code==CMD_APP_CMD) return 0; else
     if(code==(CMD_APP_CMD|CMD_RSPNS_48)) return r&SR_APP_CMD; else
@@ -205,7 +208,7 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
             sd_cmd(CMD_READ_SINGLE,(lba+c)*512);
             if(sd_err) return 0;
         }
-        if((r=sd_int(INT_READ_RDY))){esp_printf(putc, "\rERROR: Timeout waiting for ready to read\n");sd_err=r;return 0;}
+        if((r=sd_int(INT_READ_RDY))){red();esp_printf(putc, "\rERROR: Timeout waiting for ready to read\n");resetColor();sd_err=r;return 0;}
         for(d=0;d<128;d++) buf[d] = *EMMC_DATA;
         c++; buf+=128;
     }
@@ -222,7 +225,9 @@ int sd_clk(unsigned int f)
     int cnt = 100000;
     while((*EMMC_STATUS & (SR_CMD_INHIBIT|SR_DAT_INHIBIT)) && cnt--) wait_msec(1);
     if(cnt<=0) {
+	red();
         esp_printf(putc,"ERROR: timeout waiting for inhibit flag\n");
+	resetColor();
         return SD_ERROR;
     }
 
@@ -246,8 +251,10 @@ int sd_clk(unsigned int f)
     *EMMC_CONTROL1 |= C1_CLK_EN; wait_msec(10);
     cnt=10000; while(!(*EMMC_CONTROL1 & C1_CLK_STABLE) && cnt--) wait_msec(10);
     if(cnt<=0) {
+	red();
         esp_printf(putc,"ERROR: failed to get stable clock\n");
-        return SD_ERROR;
+        resetColor();
+	return SD_ERROR;
     }
     return SD_OK;
 }
@@ -274,15 +281,18 @@ int sd_init()
     wait_msec(150); *GPPUD=0; *GPPUDCLK1=0;
 
     sd_hv = (*EMMC_SLOTISR_VER & HOST_SPEC_NUM) >> HOST_SPEC_NUM_SHIFT;
+    green();
     esp_printf(putc, "EMMC: GPIO set up\n");
     // Reset the card.
     *EMMC_CONTROL0 = 0; *EMMC_CONTROL1 |= C1_SRST_HC;
     cnt=10000; do{wait_msec(10);} while( (*EMMC_CONTROL1 & C1_SRST_HC) && cnt-- );
     if(cnt<=0) {
-        esp_printf(putc,"ERROR: failed to reset EMMC\n");
+        red();
+	esp_printf(putc,"ERROR: failed to reset EMMC\n");
         return SD_ERROR;
     }
     esp_printf(putc,"EMMC: reset OK\n");
+    resetColor();
     *EMMC_CONTROL1 |= C1_CLK_INTLEN | C1_TOUNIT_MAX;
     wait_msec(10);
     // Set clock to setup frequency.
@@ -309,7 +319,9 @@ int sd_init()
         //uart_hex(r);
         esp_printf(putc,"\n");
         if(sd_err!=SD_TIMEOUT && sd_err!=SD_OK ) {
-            esp_printf(putc,"ERROR: EMMC ACMD41 returned error\n");
+            red();
+	    esp_printf(putc,"ERROR: EMMC ACMD41 returned error\n");
+            resetColor();
             return sd_err;
         }
     }

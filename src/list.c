@@ -3,13 +3,12 @@
 #include "serial.h"
 #include "rprintf.h"
 
-//HEADS UP: list_items is currently under construction and does not print anything out, sorry for the inconvience future me
 void list_items(struct list_element *head){
         while (head != NULL){
                 esp_printf(putc, "%d",head->data);
                 head = head->next;
         }
-       // printf("\n");
+	esp_printf(putc,"\n");
 }
 
 

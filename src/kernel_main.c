@@ -4,6 +4,7 @@
 #include "mmu.h"
 #include "delays.h"
 #include "fat.h"
+#include "color.h"
 
 char glbl[128];
 
@@ -41,18 +42,20 @@ void hexdump(char *buffer, unsigned int length){
 		}
 		esp_printf(putc, "\n");	
 	}
-	esp_printf(putc, "\n");		 	
+	esp_printf(putc, "\n");
 }
 
 
 void kernel_main() {
 	//clear_bss();
 	if (fatInit() != 0){
+		red();
 		esp_printf(putc, "[ERROR] FAT INIT FAILED");
 		return ;
 	}
+	green();
 	esp_printf(putc, "FAT SYS INITIALIZED\n");
-
+	resetColor();
 	while (1){
 
 	}
