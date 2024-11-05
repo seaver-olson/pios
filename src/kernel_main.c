@@ -3,8 +3,9 @@
 #include "mmu.h"
 #include "delays.h"
 #include "fat.h"
+#include "irqio.h"
 
-char glbl[128];
+
 
 void clear_bss(){
 	extern unsigned char __bss_end;
@@ -16,16 +17,6 @@ void clear_bss(){
 		begin_bss[i] = 0;
 		i++;
 	}
-}
-
-unsigned int getEL(){
-  unsigned int el;
-  asm("mrs %0,CurrentEL"
-      : "=r"(el)
-      :
-      :);
-
-  return el;
 }
 
 void hexdump(char *buffer, unsigned int length){
@@ -43,6 +34,16 @@ void hexdump(char *buffer, unsigned int length){
 	esp_printf(putc, "\n");
 }
 
+unsigned int getEL(){
+  unsigned int el;
+  asm("mrs %0,CurrentEL"
+      : "=r"(el)
+      :
+      :);
+
+  return el;
+}
+
 
 void kernel_main() {
 	//clear_bss();
@@ -56,6 +57,7 @@ void kernel_main() {
 	esp_printf(putc, "FAT SYS INITIALIZED\n");
 	resetColor();
 	while (1){
-
+		wait_msec(1000);
+		esp_printf(putc, "READY\n");
 	}
 }

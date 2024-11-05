@@ -1,4 +1,5 @@
 // AArch64 mode
+.include "irq.s"
 
 .section ".kernel-header"
 
@@ -112,3 +113,76 @@ maincore:
     // for failsafe, halt this core too
     // b 1b
 
+.align 11
+vectors:
+  ventry  sync_invalid_el1t                       // Synchronous EL1t
+  ventry  irq_invalid_el1t                        // IRQ EL1t
+  ventry  fiq_invalid_el1t                        // FIQ EL1t
+  ventry  error_invalid_el1t                      // Error EL1t
+
+  ventry  sync_invalid_el1h                       // Synchronous EL1h
+  ventry  el1_irq                                 // IRQ EL1h
+  ventry  fiq_invalid_el1h                        // FIQ EL1h
+  ventry  error_invalid_el1h                      // Error EL1h
+
+  ventry  sync_invalid_el0_64                     // Synchronous 64-bit EL0
+  ventry  irq_invalid_el0_64                      // IRQ 64-bit EL0
+  ventry  fiq_invalid_el0_64                      // FIQ 64-bit EL0
+  ventry  error_invalid_el0_64                    // Error 64-bit EL0
+
+  ventry  sync_invalid_el0_32                     // Synchronous 32-bit EL0
+  ventry  irq_invalid_el0_32                      // IRQ 32-bit EL0
+  ventry  fiq_invalid_el0_32                      // FIQ 32-bit EL0
+  ventry  error_invalid_el0_32                    // Error 32-bit EL0
+
+.align 2
+sync_invalid_el1t:
+  handle_invalid_entry  0
+
+irq_invalid_el1t:
+  handle_invalid_entry  1
+
+fiq_invalid_el1t:
+  handle_invalid_entry  2
+
+error_invalid_el1t:
+  handle_invalid_entry  3
+
+sync_invalid_el1h:
+  handle_invalid_entry  4
+
+el1_irq:
+  kernel_entry
+  ldr     x0, handle_irq
+  blr     x0
+  kernel_exit
+
+fiq_invalid_el1h:
+  handle_invalid_entry  6
+
+error_invalid_el1h:
+  handle_invalid_entry  7
+
+sync_invalid_el0_64:
+  handle_invalid_entry  8
+
+irq_invalid_el0_64:
+  handle_invalid_entry  9
+
+fiq_invalid_el0_64:
+  handle_invalid_entry  10
+
+error_invalid_el0_64:
+  handle_invalid_entry  11
+
+sync_invalid_el0_32:
+  handle_invalid_entry  12
+
+irq_invalid_el0_32:
+  handle_invalid_entry  13
+
+fiq_invalid_el0_32:
+  handle_invalid_entry  14
+
+error_invalid_el0_32:
+  handle_invalid_entry  15

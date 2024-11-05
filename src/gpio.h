@@ -18,3 +18,13 @@
 #define GPPUD           ((volatile unsigned int*)(MMIO_BASE+0x00200094))
 #define GPPUDCLK0       ((volatile unsigned int*)(MMIO_BASE+0x00200098))
 #define GPPUDCLK1       ((volatile unsigned int*)(MMIO_BASE+0x0020009C))
+
+// interrupt registers
+#define IRQ_BASIC       ((volatile unsigned int*)(MMIO_BASE+0x0000B200))
+#define IRQ_PEND1       ((volatile unsigned int*)(MMIO_BASE+0x0000B204))
+#define IRQ_PEND2       ((volatile unsigned int*)(MMIO_BASE+0x0000B208))
+#define IRQ_FIQ         ((volatile unsigned int*)(MMIO_BASE+0x0000B20C))
+#define IRQ_ENABLE1     ((volatile unsigned int*)(MMIO_BASE+0x0000B210))
+#define IRQ_ENABLE2     ((volatile unsigned int*)(MMIO_BASE+0x0000B214))
+#define IRQ_ENABLE_BASIC ((volatile unsigned int*)(MMIO_BASE+0x0000B218))
+#define IRQ_DISABLE1    ((volatile unsigned int*)(MMIO_BASE+0x0000B21C))
