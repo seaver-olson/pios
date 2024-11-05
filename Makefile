@@ -13,6 +13,8 @@ ODIR = obj
 SDIR = src
 
 OBJS = \
+	exc.o \
+        mailbox.o \
 	boot.o \
 	delays.o \
 	kernel_main.o \

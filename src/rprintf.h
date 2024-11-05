@@ -29,6 +29,7 @@ typedef void (*func_ptr)(int);
 void esp_sprintf(char *buf, char *ctrl, ...);
 void esp_vprintf( const func_ptr f_ptr, charptr ctrl, va_list argp);
 void esp_printf( const func_ptr f_ptr, charptr ctrl, ...);
+void esp_printhex(unsigned int num);
 void printk(charptr ctrl, ...);
 size_t strlen(const char *c);
 int tolower(int c);

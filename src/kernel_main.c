@@ -3,7 +3,7 @@
 #include "mmu.h"
 #include "delays.h"
 #include "fat.h"
-
+#include "mailbox.h"
 
 
 void clear_bss(){
@@ -46,17 +46,33 @@ unsigned int getEL(){
 
 void kernel_main() {
 	//clear_bss();
-	setupIdentityMap();
+	mailbox[0] = 8*4;                  // length of the message
+    	mailbox[1] = MAILBOX_REQUEST;         // this is a request message
+    
+   	mailbox[2] = MAILBOX_TAG_GETSERIAL;   // get serial number command
+    	mailbox[3] = 8;                    // buffer size
+    	mailbox[4] = 8;
+    	mailbox[5] = 0;                    // clear output buffer
+    	mailbox[6] = 0;
+
+    	mailbox[7] = MAILBOX_TAG_LAST;
+
+    	if (mailbox_call(MAILBOX_CH_PROP)) {
+        	esp_printf(putc, "My serial number is: ");
+        	esp_printhex(mailbox[6]);
+        	esp_printhex(mailbox[5]);
+        	esp_printf(putc, "\n");
+    	} else {
+        	fail("Unable to query serial!\n");
+        }
+        setupIdentityMap();
 	if (fatInit() != 0){
-		red();
-		esp_printf(putc, "[ERROR] FAT INIT FAILED");
+		fail("[ERROR] FAT INIT FAILED");
 		return ;
 	}
-	green();
-	esp_printf(putc, "FAT SYS INITIALIZED\n");
-	resetColor();
+	success( "FAT SYS INITIALIZED\n");
 	while (1){
 		wait_msec(1000);
-		esp_printf(putc, "READY\n");
+		esp_printf(putc, getc());
 	}
 }
