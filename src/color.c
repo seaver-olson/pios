@@ -1,5 +1,4 @@
 #include "rprintf.h"
-#include "serial.h"
 #include "color.h"
 
 void red(){

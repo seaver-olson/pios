@@ -18,7 +18,6 @@ OBJS = \
 	kernel_main.o \
 	mmu.o \
 	page.o \
-	serial.o \
 	rprintf.o \
 	sd.o \
 	list.o \

@@ -24,6 +24,24 @@ static int num1;
 static int num2;
 static char pad_character;
 
+#define MU_IO_REG 0x3F215040
+
+volatile int *muio_ptr = (volatile int *)(MU_IO_REG);
+
+void putc(int data){
+	if (muio_ptr != NULL){
+		*muio_ptr = data;
+	}
+}
+
+int getc(){
+	if (muio_ptr != NULL){
+		return *muio_ptr;
+	}
+	return -1;
+}
+
+
 size_t strlen(const char *str) {
     unsigned int len = 0;
     while(str[len] != '\0') {
@@ -48,6 +66,35 @@ int isdig(int c) {
 }
 
 
+int strcmp(char *first, char *second){
+	while(*first &&(*first==*second)){
+		first++;
+		second++;
+	}
+	return *(unsigned char *)first - *(unsigned char *)second;
+}
+
+void *memcpy(void *dest, const void *src, size_t n){
+	unsigned char *d = (unsigned char *)dest;
+	const unsigned char *s = (const unsigned char *)src;
+	while (n--){
+		*d++ = *s++;
+	}
+	return dest;
+}
+
+
+int strncmp(char *first, char *second, size_t n){
+	while (n && *first && (*first == *second)){
+		first++;
+		second++;
+		n--;
+	}
+	if (n == 0){
+		return 0;
+	}
+	return *(unsigned char *)first - *(unsigned char *)second;
+}
 
 
 /*---------------------------------------------------*/
@@ -280,6 +327,9 @@ try_next:
    va_end( argp);
    }
 
+void esp_printhex(unsigned int num){
+   outnum(num, 16);
+}
 /*---------------------------------------------------*/
 
 void success(char *str){

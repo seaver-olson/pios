@@ -6,36 +6,6 @@ unsigned char fat_table[8*SECTOR_SIZE];
 unsigned int actual_data_sector;
 unsigned int root_sector;
 
-int strcmp(char *first, char *second){
-	while(*first &&(*first==*second)){
-		first++;
-		second++;
-	}
-	return *(unsigned char *)first - *(unsigned char *)second;
-}
-
-void *memcpy(void *dest, const void *src, size_t n){
-	unsigned char *d = (unsigned char *)dest;
-	const unsigned char *s = (const unsigned char *)src;
-	while (n--){
-		*d++ = *s++;
-	}
-	return dest;
-}
-
-
-int strncmp(char *first, char *second, size_t n){
-	while (n && *first && (*first == *second)){
-		first++;
-		second++;
-		n--;
-	}
-	if (n == 0){
-		return 0;
-	}
-	return *(unsigned char *)first - *(unsigned char *)second;
-}
-
 int fatInit() {  
     if (sd_init() != 0) {
         esp_printf(putc, "[WARNING]: SD card initialization failed\n");

@@ -5,12 +5,18 @@
 //#include <ctype.h>
 //#include <string.h>
 #include <stdarg.h>
-#include "serial.h"
 #include "color.h"
 
 typedef unsigned int  size_t;
 
 #define NULL (void*)0
+
+void putc(int data);
+int getc();
+int strcmp(char *first, char *second);
+void *memcpy(void *dest, const void *src, size_t n);
+int strncmp(char *first, char *second, size_t n);
+size_t strlen(const char *str);
 
 int isdig(int c); // hand-implemented alternative to isdigit(), which uses a bunch of c library functions I don't want to include.
 
