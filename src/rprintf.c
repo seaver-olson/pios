@@ -281,3 +281,23 @@ try_next:
    }
 
 /*---------------------------------------------------*/
+
+void success(char *str){
+   green();
+   esp_printf(putc, "%s\n", str);
+   resetColor();
+}
+
+void fail(char *str){
+   red();
+   esp_printf(putc, "%s\n", str);
+   resetColor();
+}
+
+void warning(char *str){
+   yellow();
+   esp_printf(putc, "%s\n", str);
+   resetColor();
+}
+
+

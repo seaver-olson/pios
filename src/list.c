@@ -1,6 +1,4 @@
-
 #include "list.h"
-#include "serial.h"
 #include "rprintf.h"
 
 void list_items(struct list_element *head){

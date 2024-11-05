@@ -3,6 +3,9 @@
 #define __FAT_H__
 
 #include <stdint.h>
+#include "sd.h"
+#include "rprintf.h"
+
 #define SECTOR_SIZE 512
 
 #define CLUSTER_SIZE 4096

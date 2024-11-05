@@ -30,20 +30,22 @@ int loadPageTable(struct table_descriptor_stage1 *L1table) {
     asm volatile ("mrs %0, id_aa64mmfr0_el1" : "=r" (r));
     b = r & 0xF;
     if ((r & (0xF << 28)) || b < 1) {
+        fail("ERROR: 4K granule not supported");
         return -1;
     }
     // Set MAIR_EL1 for normal, device, and non-cacheable memory
     r = (0xFF << 0) | (0x04 << 8) | (0x44 << 16);
     asm volatile ("msr mair_el1, %0" : : "r" (r));
-
+    success("MAIR_EL1 set");
     // Configure TCR_EL1 with adjusted T0SZ for 1GB address space
     r = (0b00LL << 37) | (b << 32) | (0b10LL << 30) |
         (0b11LL << 28) | (0b01LL << 26) | (0b01LL << 24) |
         (0b0LL << 23) | (34LL << 0);  // T0SZ=34 for 1GB
     asm volatile ("msr tcr_el1, %0; isb" : : "r" (r));
-
+    success("TCR_EL1 set");
     // Set TTBR0_EL1 to L1 table
     asm volatile ("msr ttbr0_el1, %0" : : "r" ((unsigned long)L1table));
+    success("TTBR0_EL1 set");
     
     // Enable the MMU in SCTLR_EL1, keeping cache settings minimal
     asm volatile ("dsb ish; isb; mrs %0, sctlr_el1" : "=r" (r));
@@ -51,7 +53,7 @@ int loadPageTable(struct table_descriptor_stage1 *L1table) {
     r &= ~((1 << 1) | (1 << 3) | (1 << 4) | (1 << 2) | (1 << 12)); // Disable caches initially
     r |= (1 << 0);     // Enable MMU
     asm volatile ("msr sctlr_el1, %0; isb" : : "r" (r));
-    esp_printf(putc, "success");
+    success("MMU enabled");
     return 0;
 }
 

@@ -1,7 +1,4 @@
 #include "fat.h"
-#include "sd.h"
-#include "rprintf.h"
-#include "serial.h"
 
 struct boot_sector *bs;
 unsigned char bootSector[SECTOR_SIZE];

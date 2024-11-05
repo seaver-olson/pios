@@ -1,10 +1,8 @@
 #include "rprintf.h"
 #include "page.h"
-#include "serial.h"
 #include "mmu.h"
 #include "delays.h"
 #include "fat.h"
-#include "color.h"
 
 char glbl[128];
 

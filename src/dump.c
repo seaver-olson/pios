@@ -1,18 +1,18 @@
-
+#include "rprintf.h"
 
 void hexdump(char *buffer, unsigned int length){
 	for (int i = 0; i < length; i += 16) {
-		printf("(%x) : ", &buffer);
+		esp_printf(putc,"(%x) : ", &buffer);
 		for (int j=0; j < 16;j++){
 			if (j+i>length){
-				printf("  ");
+				esp_printf(putc,"  ");
 			} else {
-				printf("%02x ", buffer[i + j]);
+				esp_printf(putc,"%02x ", buffer[i + j]);
 			}
 		}
-		printf("\n");	
+		esp_printf(putc,"\n");	
 	}
-	printf("\n");	 	
+	esp_printf(putc,"\n");	 	
 }
 
 

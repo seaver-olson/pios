@@ -8,6 +8,6 @@ unsigned long get_timer_count(){
 void wait_msec(unsigned int ms){
 	unsigned long s = get_timer_count();
 	while (get_timer_count() - s < (1000 * ms)){
-
+		
 	}
 }

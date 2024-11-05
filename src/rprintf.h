@@ -6,6 +6,7 @@
 //#include <string.h>
 #include <stdarg.h>
 #include "serial.h"
+#include "color.h"
 
 typedef unsigned int  size_t;
 
@@ -24,4 +25,8 @@ void esp_vprintf( const func_ptr f_ptr, charptr ctrl, va_list argp);
 void esp_printf( const func_ptr f_ptr, charptr ctrl, ...);
 void printk(charptr ctrl, ...);
 size_t strlen(const char *c);
+int tolower(int c);
+void success(char *str);
+void fail(char *str);
+void warning(char *str);
 #endif
