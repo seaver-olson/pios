@@ -48,6 +48,7 @@ void hexdump(char *buffer, unsigned int length){
 
 void kernel_main() {
 	//clear_bss();
+	setupIdentityMap();
 	if (fatInit() != 0){
 		red();
 		esp_printf(putc, "[ERROR] FAT INIT FAILED");

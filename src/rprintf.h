@@ -5,6 +5,7 @@
 //#include <ctype.h>
 //#include <string.h>
 #include <stdarg.h>
+#include "serial.h"
 
 typedef unsigned int  size_t;
 

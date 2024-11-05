@@ -1,116 +1,76 @@
-
-
-
 #include "mmu.h"
 
-
+// Define L2 tables for different memory regions if necessary
 struct table_descriptor_stage1 L1table[512] __attribute__((aligned(4096)));
-
-
-struct page_descriptor_stage1 L2table[512] __attribute__((aligned(4096)));
-
-
-/*
-
-   38             30  29                 21  20                           0
-  |------------------|----------------------|------------------------------|
-  | L1 table entry   |  L2 table entry      | Offset                       |
-  |------------------|----------------------|------------------------------|
-
-*/
-
+struct page_descriptor_stage1 L2table0[512] __attribute__((aligned(4096)));  // First 1GB
+// Additional L2 tables would go here if you want to map more than 1GB
 
 void mapPages(void *vaddr, void *paddr) {
     unsigned long L2tableIndex = ((unsigned long)vaddr >> 21) & 0x1ff;
     unsigned long L1tableIndex = ((unsigned long)vaddr >> 30) & 0x1ff;
+    esp_printf(putc,"Mapping: vaddr=%lx, paddr=%lx, L1index=%lx, L2index=%lx\n",
+                (unsigned long)vaddr, (unsigned long)paddr, L1tableIndex, L2tableIndex);
+    // Set L1 entry to point to the correct L2 table
+    L1table[L1tableIndex].type = 3;  // Point to next level (L2 table)
+    L1table[L1tableIndex].next_lvl_table = ((unsigned long)&L2table0[0]) >> 12;
 
-
-    L1table[L1tableIndex].type = 3;
-    L1table[L1tableIndex].next_lvl_table = ((unsigned long)&L2table[0])>>12;
-
-    L2table[L2tableIndex].attrindx = 0; // Normal memory, not memory-mapped IO 1 for IO
-    L2table[L2tableIndex].type = 1; // Pointing to memory page
-    L2table[L2tableIndex].sh = 3; // Set inner sharable
-    L2table[L2tableIndex].ap = 0; // Access permission, kernel RW
-    L2table[L2tableIndex].af = 1; // ??
-    L2table[L2tableIndex].output_addr = (unsigned long)paddr >> 21; // 
+    // Configure L2 entry for normal memory
+    L2table0[L2tableIndex].attrindx = 0;  // AttrIdx=0 for normal memory
+    L2table0[L2tableIndex].type = 1;      // Page descriptor
+    L2table0[L2tableIndex].sh = 3;        // Inner sharable
+    L2table0[L2tableIndex].ap = 0;        // Kernel RW
+    L2table0[L2tableIndex].af = 1;        // Access flag
+    L2table0[L2tableIndex].output_addr = (unsigned long)paddr >> 21;
 }
 
-
-
-
-
-
-/*
- * loadPageTable
- *
- * Enables the MMU, loading the given L1 page table.
- *
- */
 int loadPageTable(struct table_descriptor_stage1 *L1table) {
+    unsigned long r, b;
 
-    unsigned long b, r;
-    // Enable paging in system regs. This code should be moved elsewhere. Testing only for now.
-    // check for 4k granule and at least 36 bits physical address bus */
+    // Check for 4K granule support
     asm volatile ("mrs %0, id_aa64mmfr0_el1" : "=r" (r));
-    b=r&0xF;
-    if(r&(0xF<<28)/*4k*/ || b<1/*36 bits*/) {
-//        uart_puts("ERROR: 4k granule or 36 bit address space not supported\n");
+    b = r & 0xF;
+    if ((r & (0xF << 28)) || b < 1) {
         return -1;
-    }   
-    // first, set Memory Attributes array, indexed by PT_MEM, PT_DEV, PT_NC in our example
-    r=  (0xFF << 0) |    // AttrIdx=0: normal, IWBWA, OWBWA, NTR
-        (0x04 << 8) |    // AttrIdx=1: device, nGnRE (must be OSH too)
-        (0x44 <<16);     // AttrIdx=2: non cacheable
+    }
+    // Set MAIR_EL1 for normal, device, and non-cacheable memory
+    r = (0xFF << 0) | (0x04 << 8) | (0x44 << 16);
     asm volatile ("msr mair_el1, %0" : : "r" (r));
 
-    // next, specify mapping characteristics in translate control register
-    r=  (0b00LL << 37) | // TBI=0, no tagging
-        (b << 32) |      // IPS=autodetected
-        (0b10LL << 30) | // TG1=4k
-        (0b11LL << 28) | // SH1=3 inner
-        (0b01LL << 26) | // ORGN1=1 write back
-        (0b01LL << 24) | // IRGN1=1 write back
-        (0b0LL  << 23) | // EPD1 enable higher half
-        (25LL   << 16) | // T1SZ=25, 3 levels (512G)
-        (0b00LL << 14) | // TG0=4k
-        (0b11LL << 12) | // SH0=3 inner
-        (0b01LL << 10) | // ORGN0=1 write back
-        (0b01LL << 8) |  // IRGN0=1 write back
-        (0b0LL  << 7) |  // EPD0 enable lower half
-        (25LL   << 0);   // T0SZ=25, 3 levels (512G)
+    // Configure TCR_EL1 with adjusted T0SZ for 1GB address space
+    r = (0b00LL << 37) | (b << 32) | (0b10LL << 30) |
+        (0b11LL << 28) | (0b01LL << 26) | (0b01LL << 24) |
+        (0b0LL << 23) | (34LL << 0);  // T0SZ=34 for 1GB
     asm volatile ("msr tcr_el1, %0; isb" : : "r" (r));
 
-
-    // tell the MMU where our translation tables are. TTBR_CNP bit not documented, but required
-    // lower half, user space
+    // Set TTBR0_EL1 to L1 table
     asm volatile ("msr ttbr0_el1, %0" : : "r" ((unsigned long)L1table));
-
-    // finally, toggle some bits in system control register to enable page translation
+    
+    // Enable the MMU in SCTLR_EL1, keeping cache settings minimal
     asm volatile ("dsb ish; isb; mrs %0, sctlr_el1" : "=r" (r));
-    r|=0xC00800;     // set mandatory reserved bits
-    r&=~((1<<25) |   // clear EE, little endian translation tables
-         (1<<24) |   // clear E0E
-         (1<<19) |   // clear WXN
-         (1<<12) |   // clear I, no instruction cache
-         (1<<4) |    // clear SA0
-         (1<<3) |    // clear SA
-         (1<<2) |    // clear C, no cache at all
-         (1<<1));    // clear A, no aligment check
-    r|=  (1<<0);     // set M, enable MMU
+    r |= 0xC00800;     // Set reserved bits
+    r &= ~((1 << 1) | (1 << 3) | (1 << 4) | (1 << 2) | (1 << 12)); // Disable caches initially
+    r |= (1 << 0);     // Enable MMU
     asm volatile ("msr sctlr_el1, %0; isb" : : "r" (r));
+    esp_printf(putc, "success");
     return 0;
 }
-//note for homework 7 check, there is no edge case testing right now but I will add that later
-void setupIdentityMap(){
-    void *vaddr = (void *)0x0;//Virtual address
-    void *paddr = (void *)0x0;//Physical address
-    //512: num_entries_per_table
-    for(int i = 0; i < 512; i++){
-        mapPages(vaddr, paddr); 
-        //increment by 2MB, prob switch this logic to the for loop later
-        vaddr += 0x200000;
-        paddr += 0x200000;
+
+void setupIdentityMap() {
+    void *vaddr = (void *)0x0;
+    void *paddr = (void *)0x0;
+
+    // Map first 1GB with identity mapping
+    for (int i = 0; i < 512; i++) {
+        mapPages(vaddr, paddr);
+        vaddr += 0x200000;  // Increment by 2MB
+        paddr += 0x200000;  // Increment by 2MB
     }
-    loadPageTable(L1table);
+    // Enable MMU with the loaded page tables
+    if (loadPageTable(L1table) != 0){
+	red();
+	esp_printf(putc,"ERROR: MMU FAILED TO BE INITIALIZED\n");
+    	return;
+	}
+    green();
+    esp_printf(putc, "MMU INITIALIZED\n");
 }
