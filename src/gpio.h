@@ -20,6 +20,7 @@
 #define GPPUDCLK1       ((volatile unsigned int*)(MMIO_BASE+0x0020009C))
 
 // interrupt registers
+
 #define IRQ_BASIC       ((volatile unsigned int*)(MMIO_BASE+0x0000B200))
 #define IRQ_PEND1       ((volatile unsigned int*)(MMIO_BASE+0x0000B204))
 #define IRQ_PEND2       ((volatile unsigned int*)(MMIO_BASE+0x0000B208))
@@ -28,3 +29,19 @@
 #define IRQ_ENABLE2     ((volatile unsigned int*)(MMIO_BASE+0x0000B214))
 #define IRQ_ENABLE_BASIC ((volatile unsigned int*)(MMIO_BASE+0x0000B218))
 #define IRQ_DISABLE1    ((volatile unsigned int*)(MMIO_BASE+0x0000B21C))
+#define IRQ_DISABLE2    ((volatile unsigned int*)(MMIO_BASE+0x0000B220))
+#define IRQ_DISABLE_BASIC ((volatile unsigned int*)(MMIO_BASE+0x0000B224))
+
+#define PERIPHERAL_BASE 0x3F000000
+
+#define PERIPHERAL_LENGTH 0x01000000
+
+
+#define SYSTEM_TIMER_OFFSET 0x3000
+#define INTERRUPTS_OFFSET 0xB000
+#define MAILBOX_OFFSET 0xB880
+#define UART0_OFFSET 0x201000
+#define GPIO_OFFSET 0x200000
+#define EMMC_OFFSET 0x300000
+
+#define SYSTEM_TIMER_BASE (PERIPHERAL_BASE + SYSTEM_TIMER_OFFSET)

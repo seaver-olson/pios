@@ -4,7 +4,7 @@
 #include "delays.h"
 #include "fat.h"
 #include "mailbox.h"
-
+#include "interrupts.h"
 
 void clear_bss(){
 	extern unsigned char __bss_end;
@@ -46,26 +46,19 @@ unsigned int getEL(){
 
 void kernel_main() {
 	//clear_bss();
-	mailbox[0] = 8*4;                  // length of the message
-    	mailbox[1] = MAILBOX_REQUEST;         // this is a request message
-    
-   	mailbox[2] = MAILBOX_TAG_GETSERIAL;   // get serial number command
-    	mailbox[3] = 8;                    // buffer size
-    	mailbox[4] = 8;
-    	mailbox[5] = 0;                    // clear output buffer
-    	mailbox[6] = 0;
+	
+	setupIdentityMap();
+	if (interrupt_init() != 0){
+		fail("[ERROR] INTERRUPT INIT FAILED");
+		return;
+	}
+	success("INTERRUPT INITIALIZED\n");
+	if (timer_init() != 0){
+		fail("[ERROR] TIMER INIT FAILED");
+		return;
+	}
+	success("TIMER INITIALIZED\n");
 
-    	mailbox[7] = MAILBOX_TAG_LAST;
-
-    	if (mailbox_call(MAILBOX_CH_PROP)) {
-        	esp_printf(putc, "My serial number is: ");
-        	esp_printhex(mailbox[6]);
-        	esp_printhex(mailbox[5]);
-        	esp_printf(putc, "\n");
-    	} else {
-        	fail("Unable to query serial!\n");
-        }
-        setupIdentityMap();
 	if (fatInit() != 0){
 		fail("[ERROR] FAT INIT FAILED");
 		return ;

@@ -34,12 +34,7 @@ void putc(int data){
 	}
 }
 
-int getc(){
-	if (muio_ptr != NULL){
-		return *muio_ptr;
-	}
-	return -1;
-}
+
 
 void logc(int data){
    //send data to log.txt
