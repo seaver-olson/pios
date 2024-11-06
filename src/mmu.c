@@ -84,16 +84,16 @@ void setupIdentityMap() {
 
     // Map first 1GB with identity mapping
     green();
-    esp_printf(putc, "Identity map setup from ");
-    esp_printf(putc, "Mapping: vaddr=%lx, paddr=%lx", (unsigned long)vaddr, (unsigned long)paddr);
+    esp_printf(putc, "Identity map setup from: \n");
+    esp_printf(putc, "Mapping: vaddr=%lx, paddr=%lx\n", (unsigned long)vaddr, (unsigned long)paddr);
     for (int i = 0; i < 512; i++) {
         mapPages(vaddr, paddr);
         vaddr += 0x200000;  // Increment by 2MB
         paddr += 0x200000;  // Increment by 2MB
     }
-    esp_printf(putc, " to Mapping: vaddr=%lx, paddr=%lx\n", (unsigned long)vaddr, (unsigned long)paddr);
+    esp_printf(putc, "to: \nMapping: vaddr=%lx, paddr=%lx\n", (unsigned long)vaddr, (unsigned long)paddr);
     resetColor();
-    
+
     // Enable MMU with the loaded page tables
     if (loadPageTable(L1table) != 0){
 	    fail("ERROR: MMU FAILED TO BE INITIALIZED\n");
