@@ -11,11 +11,6 @@ void __attribute__ ((interrupt ("ABORT"))) prefetch_abort_handler(void);
 typedef void (*interrupt_handler_f)(void);
 typedef void (*interrupt_clearer_f)(void);
 
-int interrupts_init(void);
-void register_irq_handler(irq_number_t irq_num, interrupt_handler_f handler, interrupt_clearer_f clearer);
-void unregister_irq_handler(irq_number_t irq_num);
-int timer_init(void);
-
 typedef enum {
     SYSTEM_TIMER_1 = 1,
     USB_CONTROLER = 9,
@@ -52,3 +47,8 @@ typedef struct {
     uint32_t timer2;
     uint32_t timer3;
 } timer_registers_t;
+
+int interrupts_init(void);
+void register_irq_handler(irq_number_t irq_num, interrupt_handler_f handler, interrupt_clearer_f clearer);
+void unregister_irq_handler(irq_number_t irq_num);
+int timer_init(void);
