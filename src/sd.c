@@ -155,8 +155,8 @@ int sd_cmd(unsigned int code, unsigned int arg)
     }
     if(sd_status(SR_CMD_INHIBIT)) { fail("ERROR : EMMC BUSY\n"); sd_err= SD_TIMEOUT;return 0;}
     
-    esp_printf(putc,"EMMC: Sending command ");
-    esp_printf(putc,"%x : %x\n",code,arg);
+    //esp_printf(putc,"EMMC: Sending command ");
+    //esp_printf(putc,"%x : %x\n",code,arg);
     *EMMC_INTERRUPT=*EMMC_INTERRUPT; *EMMC_ARG1=arg; *EMMC_CMDTM=code;
     if(code==CMD_SEND_OP_COND) wait_msec(1000); else
     if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_msec(100);

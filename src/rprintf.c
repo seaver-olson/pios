@@ -41,6 +41,10 @@ int getc(){
 	return -1;
 }
 
+void logc(int data){
+   //send data to log.txt
+
+}
 
 size_t strlen(const char *str) {
     unsigned int len = 0;
@@ -348,6 +352,13 @@ void warning(char *str){
    yellow();
    esp_printf(putc, "%s\n", str);
    resetColor();
+}
+
+
+
+void debug(char *str){
+   //send to debug port
+   esp_printf(logc, "%s\n", str);
 }
 
 

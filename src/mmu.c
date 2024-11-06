@@ -8,8 +8,8 @@ struct page_descriptor_stage1 L2table0[512] __attribute__((aligned(4096)));  // 
 void mapPages(void *vaddr, void *paddr) {
     unsigned long L2tableIndex = ((unsigned long)vaddr >> 21) & 0x1ff;
     unsigned long L1tableIndex = ((unsigned long)vaddr >> 30) & 0x1ff;
-    esp_printf(putc,"Mapping: vaddr=%lx, paddr=%lx, L1index=%lx, L2index=%lx\n",
-                (unsigned long)vaddr, (unsigned long)paddr, L1tableIndex, L2tableIndex);
+    // debug print esp_printf(putc,"Mapping: vaddr=%lx, paddr=%lx, L1index=%lx, L2index=%lx\n", (unsigned long)vaddr, (unsigned long)paddr, L1tableIndex, L2tableIndex);
+    
     // Set L1 entry to point to the correct L2 table
     L1table[L1tableIndex].type = 3;  // Point to next level (L2 table)
     L1table[L1tableIndex].next_lvl_table = ((unsigned long)&L2table0[0]) >> 12;
@@ -83,15 +83,20 @@ void setupIdentityMap() {
     void *paddr = (void *)0x0;
 
     // Map first 1GB with identity mapping
+    green();
+    esp_printf(putc, "Identity map setup from ");
+    esp_printf(putc, "Mapping: vaddr=%lx, paddr=%lx", (unsigned long)vaddr, (unsigned long)paddr);
     for (int i = 0; i < 512; i++) {
         mapPages(vaddr, paddr);
         vaddr += 0x200000;  // Increment by 2MB
         paddr += 0x200000;  // Increment by 2MB
     }
+    esp_printf(putc, " to Mapping: vaddr=%lx, paddr=%lx\n", (unsigned long)vaddr, (unsigned long)paddr);
+    resetColor();
+    
     // Enable MMU with the loaded page tables
     if (loadPageTable(L1table) != 0){
-	red();
-	esp_printf(putc,"ERROR: MMU FAILED TO BE INITIALIZED\n");
+	    fail("ERROR: MMU FAILED TO BE INITIALIZED\n");
     	return;
 	}
     green();
