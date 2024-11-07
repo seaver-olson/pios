@@ -1,7 +1,3 @@
-
-#ifndef __FAT_H__
-#define __FAT_H__
-
 #include <stdint.h>
 #include "sd.h"
 #include "rprintf.h"
@@ -13,10 +9,7 @@
 
 #define FILE_ATTRIBUTE_SUBDIRECTORY 0x10
 
-/*
- * Data structure definitions.
- *
- */
+
 
 /*
  * Boot sector structure for FAT FS. This is the structure of the first sector
@@ -84,5 +77,3 @@ struct file {
     uint32_t start_cluster;
 };
 
-
-#endif

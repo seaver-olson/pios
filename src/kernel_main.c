@@ -4,7 +4,7 @@
 #include "delays.h"
 #include "fat.h"
 #include "mailbox.h"
-#include "interrupts.h"
+
 
 void clear_bss(){
 	extern unsigned char __bss_end;
@@ -46,7 +46,7 @@ unsigned int getEL(){
 
 void kernel_main() {
 	//clear_bss();
-	
+	//if (UART_MIS & (1 << UART_MIS_RXMIS)) {
 	setupIdentityMap();
 	if (interrupt_init() != 0){
 		fail("[ERROR] INTERRUPT INIT FAILED");
