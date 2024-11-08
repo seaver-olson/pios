@@ -4,11 +4,12 @@
 #include "delays.h"
 #include "fat.h"
 #include "mailbox.h"
+#include "systimer.h"
 
+extern unsigned char __bss_end;
+extern unsigned char __bss_start;
 
 void clear_bss(){
-	extern unsigned char __bss_end;
-	extern unsigned char __bss_start;
 	unsigned char *begin_bss = &__bss_start;
 	unsigned char *end_bss = &__bss_end;
 	int i = 0;
@@ -44,21 +45,26 @@ unsigned int getEL(){
 }
 
 
+#define COUNTER_SECTOR 1
+
 void kernel_main() {
+	unsigned int *counter = (unsigned int*)(&__bss_end + 508);
 	//clear_bss();
 	//if (UART_MIS & (1 << UART_MIS_RXMIS)) {
+	timer_init(1);
+	asm("msr DAIFCLr, #2");
+	success("timer initialized");
 	setupIdentityMap();
-	if (interrupt_init() != 0){
-		fail("[ERROR] INTERRUPT INIT FAILED");
-		return;
+        if (sd_init()==SD_OK){
+	if (sd_readblock(COUNTER_SECTOR,&__bss_end,1)) {
+		(*counter)++;
+		if (sd_writeblock(&__bss_end,COUNTER_SECTOR,1)){
+			esp_printf(putc, "Boot counter ");
+			esp_printhex(*counter);
+			esp_printf(putc," written to SD card.\n");
 	}
-	success("INTERRUPT INITIALIZED\n");
-	if (timer_init() != 0){
-		fail("[ERROR] TIMER INIT FAILED");
-		return;
 	}
-	success("TIMER INITIALIZED\n");
-
+	}
 	if (fatInit() != 0){
 		fail("[ERROR] FAT INIT FAILED");
 		return ;
@@ -66,6 +72,6 @@ void kernel_main() {
 	success( "FAT SYS INITIALIZED\n");
 	while (1){
 		wait_msec(1000);
-		esp_printf(putc, getc());
+		
 	}
 }

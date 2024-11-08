@@ -67,7 +67,7 @@ int sd_cmd(unsigned int code, unsigned int arg)
             fail("failed to send SD APP command\n");
 	        sd_err=SD_ERROR;return 0;}
         code &= ~CMD_NEED_APP;
-    }
+   }
     if(sd_status(SR_CMD_INHIBIT)) { fail("ERROR : EMMC BUSY\n"); sd_err= SD_TIMEOUT;return 0;}
     
     //esp_printf(putc,"EMMC: Sending command ");
@@ -124,8 +124,10 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
         if((r=sd_int(INT_READ_RDY))){
            fail("Timeout waiting for ready to read\n");
         sd_err=r;return 0;}
-        for(d=0;d<128;d++) buf[d] = *EMMC_DATA;
-        c++; buf+=128;
+        for(d=0;d<128;d++){
+ 		buf[d] = *EMMC_DATA;
+        }
+	c++; buf+=128;
     }
     if( num > 1 && !(sd_scr[0] & SCR_SUPP_SET_BLKCNT) && (sd_scr[0] & SCR_SUPP_CCS)) sd_cmd(CMD_STOP_TRANS,0);
     return sd_err!=SD_OK || c!=num? 0 : num*512;
@@ -277,4 +279,53 @@ int sd_init()
     sd_scr[0]&=~SCR_SUPP_CCS;
     sd_scr[0]|=ccs;
     return SD_OK;
+}
+
+int sd_writeblock(unsigned char *buff, unsigned int lba, unsigned int num){
+	int r;
+	int c=0;
+	int d=0;
+	if (num<1)num=1;
+	esp_printf(putc, "sd_writeblock lba ");
+	esp_printhex(lba);
+	esp_printf(putc, " num ");
+	esp_printhex(num);
+	esp_printf(putc, "\n");
+	if (sd_status(SR_DAT_INHIBIT | SR_WRITE_AVAILABLE)) {
+		sd_err=SD_TIMEOUT;
+		return 0;
+	}
+	unsigned int *buf=(unsigned int *)buff;
+	if (sd_scr[0] & SCR_SUPP_CCS){
+		if (num > 1 && (sd_scr[0] & SCR_SUPP_SET_BLKCNT)){
+			sd_cmd(CMD_SET_BLOCKCNT, num);
+			if (sd_err) return 0;
+		}
+		*EMMC_BLKSIZECNT = (num << 16) | 512;
+		sd_cmd(num == 1 ? CMD_WRITE_SINGLE : CMD_WRITE_MULTI, lba);
+		if(sd_err) return 0;
+	} else *EMMC_BLKSIZECNT = (1 << 16) | 512;
+	while (num>c){
+		if (!(sd_scr[0] & SCR_SUPP_CCS)){
+			sd_cmd(CMD_WRITE_SINGLE,(lba+c)*512);
+			if(sd_err) return 0;
+		}
+		if((r=sd_int(INT_WRITE_RDY))){
+			fail("\rERROR: Timeout wating for ready to write\n");
+			sd_err=r;
+			return 0;
+		}
+		for (d;d<128;d++){ 
+			*EMMC_DATA = buf[d];//writing
+		}
+		c++;
+		buf+=128;
+	}
+	if((r=sd_int(INT_DATA_DONE))){
+		fail("\rERROR: Timeout waiting for data done\n");
+		sd_err=r;
+		return 0;
+	}
+	if (num > 1 && !(sd_scr[0] & SCR_SUPP_SET_BLKCNT) && (sd_scr[0] & SCR_SUPP_CCS)) sd_cmd(CMD_STOP_TRANS,0);
+	return sd_err!=SD_OK || c!=num? 0 : num*512;
 }
