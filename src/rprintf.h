@@ -7,13 +7,14 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include "color.h"
+#include "gpio.h"
 
 typedef unsigned int  size_t;
 
 #define NULL (void*)0
 
 void putc(int data);
-int getc();
+char getc();
 int strcmp(char *first, char *second);
 void *memcpy(void *dest, const void *src, size_t n);
 int strncmp(char *first, char *second, size_t n);

@@ -19,6 +19,20 @@
 #define GPPUDCLK0       ((volatile unsigned int*)(MMIO_BASE+0x00200098))
 #define GPPUDCLK1       ((volatile unsigned int*)(MMIO_BASE+0x0020009C))
 
+/* Auxilary mini UART registers */
+#define AUX_OFFSET 	0x00215000
+#define AUX_ENABLE      ((volatile unsigned int*)(MMIO_BASE+AUX_OFFSET+4))//test
+#define AUX_MU_IO       ((volatile unsigned int*)(MMIO_BASE+0x00215040))
+#define AUX_MU_IER      ((volatile unsigned int*)(MMIO_BASE+0x00215044))
+#define AUX_MU_IIR      ((volatile unsigned int*)(MMIO_BASE+0x00215048))
+#define AUX_MU_LCR      ((volatile unsigned int*)(MMIO_BASE+0x0021504C))
+#define AUX_MU_MCR      ((volatile unsigned int*)(MMIO_BASE+0x00215050))
+#define AUX_MU_LSR      ((volatile unsigned int*)(MMIO_BASE+0x00215054))
+#define AUX_MU_MSR      ((volatile unsigned int*)(MMIO_BASE+0x00215058))
+#define AUX_MU_SCRATCH  ((volatile unsigned int*)(MMIO_BASE+0x0021505C))
+#define AUX_MU_CNTL     ((volatile unsigned int*)(MMIO_BASE+0x00215060))
+#define AUX_MU_STAT     ((volatile unsigned int*)(MMIO_BASE+0x00215064))
+#define AUX_MU_BAUD     ((volatile unsigned int*)(MMIO_BASE+0x00215068))
 
 #define EMMC_ARG2           ((volatile unsigned int*)(MMIO_BASE+0x00300000))
 #define EMMC_BLKSIZECNT     ((volatile unsigned int*)(MMIO_BASE+0x00300004))
@@ -124,8 +138,6 @@
 #define IRQ_DISABLE2    ((volatile unsigned int*)(MMIO_BASE+0x0000B220))
 #define IRQ_DISABLE_BASIC ((volatile unsigned int*)(MMIO_BASE+0x0000B224))
 
-#define PERIPHERAL_BASE 0x3F000000
-
 #define PERIPHERAL_LENGTH 0x01000000
 
 
@@ -136,4 +148,4 @@
 #define GPIO_OFFSET 0x200000
 #define EMMC_OFFSET 0x300000
 
-#define SYSTEM_TIMER_BASE (PERIPHERAL_BASE + SYSTEM_TIMER_OFFSET)
+#define SYSTEM_TIMER_BASE (MMIO_BASE + SYSTEM_TIMER_OFFSET)
