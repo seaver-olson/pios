@@ -71,8 +71,8 @@ void kernel_main() {
 	success( "FAT SYS INITIALIZED\n");
 
 	//test SD card write and read
-	char writeBuffer[512] = "Test data for SD card write";
-	char readBuffer[512];
+	unsigned char writeBuffer[512] = "Test data for SD card write";
+	unsigned char readBuffer[512];
 	if (sd_writeblock(writeBuffer, 0, 1) != 0){
 		fail("[ERROR] SD WRITE FAILED");
 		return;
