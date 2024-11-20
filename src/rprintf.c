@@ -344,10 +344,8 @@ void warning(char *str){
 }
 
 
-
 void debug(char *str){
    //send to debug port
    esp_printf(logc, "%s\n", str);
 }
-
 
