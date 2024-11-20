@@ -14,7 +14,7 @@ SDIR = src
 
 OBJS = \
 	exc.o \
-        systimer.o \
+    systimer.o \
 	mailbox.o \
 	boot.o \
 	delays.o \
