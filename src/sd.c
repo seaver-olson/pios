@@ -295,7 +295,6 @@ int sd_writeblock(unsigned char *buff, unsigned int lba, unsigned int num){
 		sd_err=SD_TIMEOUT;
 		return 0;
 	}
-	unsigned int *buf=(unsigned int *)buff;
 	if (sd_scr[0] & SCR_SUPP_CCS){
 		if (num > 1 && (sd_scr[0] & SCR_SUPP_SET_BLKCNT)){
 			sd_cmd(CMD_SET_BLOCKCNT, num);
@@ -315,11 +314,11 @@ int sd_writeblock(unsigned char *buff, unsigned int lba, unsigned int num){
 			sd_err=r;
 			return 0;
 		}
-		for (d;d<128;d++){ 
-			*EMMC_DATA = buf[d];//writing
+		for (d=0;d<128;d++){ 
+			*EMMC_DATA = ((unsigned int *)buff)[d];
 		}
 		c++;
-		buf+=128;
+		buff+=512;
 	}
 	if((r=sd_int(INT_DATA_DONE))){
 		fail("\rERROR: Timeout waiting for data done\n");
