@@ -45,4 +45,4 @@ struct page_descriptor_stage1 {
 
 void mapPages(void *vaddr, void *paddr);
 int loadPageTable(struct table_descriptor_stage1 *L1table);
-void setupIdentityMap();
+int setupIdentityMap();
